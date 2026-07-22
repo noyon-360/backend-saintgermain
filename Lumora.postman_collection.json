@@ -1,0 +1,417 @@
+{
+  "info": {
+    "name": "Lumora Backend API",
+    "description": "Postman collection for the Lumora mindfulness/meditation app backend. Base URL uses {{baseUrl}} and {{accessToken}} variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "userEmail", "value": "sophia@example.com" },
+    { "key": "otp", "value": "" },
+    { "key": "meditationId", "value": "" },
+    { "key": "inspirationId", "value": "" },
+    { "key": "learnId", "value": "" },
+    { "key": "notificationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Sign Up screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"Sophia\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Email OTP (Verify OTP screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/verify-email",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"{{otp}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/resend-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Sign In screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Forget Password (Forgot Password screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/forget-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Reset OTP (Verify OTP screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/verify-reset-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"{{otp}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password (Set New Password screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/reset-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout (Profile screen)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "item": [
+        {
+          "name": "Get Home Data (Home screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/home"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meditation",
+      "item": [
+        {
+          "name": "Get Today's Meditation (Meditation screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/meditation"
+          }
+        },
+        {
+          "name": "Get All Meditations (browse)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/meditation/all?category=yoga&page=1&limit=20"
+          }
+        },
+        {
+          "name": "Get Meditation By Id (Yoga detail screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/meditation/{{meditationId}}"
+          }
+        },
+        {
+          "name": "Mark Meditation Complete (Mark as complete button)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/meditation/{{meditationId}}/complete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inspiration",
+      "item": [
+        {
+          "name": "Get Inspiration By Id (Inspiration player screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/inspiration/{{inspirationId}}"
+          }
+        },
+        {
+          "name": "Mark As Heard (Mark as heard button)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/inspiration/{{inspirationId}}/heard"
+          }
+        },
+        {
+          "name": "Toggle Favorite (heart icon)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/inspiration/{{inspirationId}}/favorite"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Journal / Journey",
+      "item": [
+        {
+          "name": "Get Today's Journal (Journey screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/journal"
+          }
+        },
+        {
+          "name": "Get Journal By Date",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/journal?date=2026-07-15"
+          }
+        },
+        {
+          "name": "Get Journal Calendar (Journal screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/journal/calendar?month=7&year=2026"
+          }
+        },
+        {
+          "name": "Toggle Today's Activity checkbox",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/journal/activity",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityIndex\": 0,\n  \"completed\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Save Journal Prompt Answer (Journal Prompt modal Save)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/journal/prompt",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answer\": \"I'm grateful for a peaceful morning.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Learn",
+      "item": [
+        {
+          "name": "Get Learn Content - Book Tab (Learn screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn?type=book&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Get Learn Content - Video Tab (Learn screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn?type=video&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Search Learn Content",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn?type=book&search=soul"
+          }
+        },
+        {
+          "name": "Get Learn Content By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn/{{learnId}}"
+          }
+        },
+        {
+          "name": "Toggle Like (Like icon)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn/{{learnId}}/like"
+          }
+        },
+        {
+          "name": "Register Download (Download icon)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn/{{learnId}}/download"
+          }
+        },
+        {
+          "name": "Register Share (Share icon)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/learn/{{learnId}}/share"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Community",
+      "item": [
+        {
+          "name": "Get Community Status (Coming Soon screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/community"
+          }
+        },
+        {
+          "name": "Toggle Notify Me (Notify me checkbox)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/community/notify-me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Get Notifications (Notification screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/notification"
+          }
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/notification/{{notificationId}}/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile (Profile screen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/user/profile"
+          }
+        },
+        {
+          "name": "Update Profile (Edit Profile screen)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/user/profile",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "userName", "value": "Sophia", "type": "text" },
+                { "key": "phone", "value": "+8801xxxxxxxxx", "type": "text" },
+                { "key": "address", "value": "Dhaka, Bangladesh", "type": "text" },
+                { "key": "profileImage", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Password (Change Password screen)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/user/account/change-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Account (Delete Account screen)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/user/account",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"I don't use the app anymore\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
