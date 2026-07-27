@@ -113,3 +113,37 @@ export const registerShare = catchAsync(async (req, res) => {
     data: { sharesCount: item.sharesCount },
   });
 });
+
+
+export const createLearnContent = catchAsync(async (req, res) => {
+  const { type, title, authorLabel, thumbnail, contentUrl } = req.body;
+
+  if (!type || !["book", "video"].includes(type)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "type is required and must be 'book' or 'video'"
+    );
+  }
+
+  if (!title || !contentUrl) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "title and contentUrl are required"
+    );
+  }
+
+  const item = await Learn.create({
+    type,
+    title,
+    authorLabel,
+    thumbnail,
+    contentUrl,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: `${type === "book" ? "Book" : "Video"} added successfully`,
+    data: item,
+  });
+});

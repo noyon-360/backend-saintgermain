@@ -5,11 +5,14 @@ import {
   toggleLike,
   registerDownload,
   registerShare,
+  createLearnContent
 } from "../controller/learn.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+
+router.post("/", protect, createLearnContent);
 router.get("/", protect, getLearnContent);
 router.get("/:id", protect, getLearnContentById);
 router.patch("/:id/like", protect, toggleLike);

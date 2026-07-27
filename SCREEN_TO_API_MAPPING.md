@@ -1,127 +1,40 @@
-# Lumora — Figma Screen ↔ API Mapping
-
-প্রতিটা Figma screen কোন API endpoint দিয়ে চলবে, সেই endpoint কোন **route file → controller file → function name**-এ আছে — সব details এখানে।
-
-Base URL: `/api/v1`
-Auth লাগবে এমন সব route-এ header দিতে হবে: `Authorization: Bearer <accessToken>`
-
----
-
 ## 1. Splash 4 / Splash 5 / Splash 6 (Lumora logo splash)
 
 স্ট্যাটিক UI screen, কোনো API লাগে না।
-
----
 
 ## 2. Onboarding 7 / 8 / 9 (Discover Inner Peace, Daily Rituals, Grow & Thrive)
 
 স্ট্যাটিক content (client-side slider), কোনো API লাগে না। চাইলে future-এ `GET /home` ব্যবহারের আগে static onboarding array ফ্রন্টএন্ডে রাখাই যথেষ্ট।
 
----
+## 3. Sign in screen===Sign In=button===`POST /api/v1/auth/login`===`route/auth.route.js`===`controller/auth.controller.js`
 
-## 3. Sign in screen
+## 4. Sign up screen===Sign Up===button===`POST /api/v1/auth/register`===`route/auth.route.js`===`controller/auth.controller.js`
 
-| Field | API |
-|---|---|
-| Email + Password → **Sign In** button | `POST /api/v1/auth/login` |
-
-- **Route file:** `route/auth.route.js` → `router.post("/login", login)`
-- **Controller:** `controller/auth.controller.js` → `export const login`
-- Response এ `accessToken` + `refreshToken` পাবে, app-এ save করে রাখবে।
-- "Haven't an account? Sign Up" লিংক → Sign up screen এ নিয়ে যায়, কোনো API না।
-
----
-
-## 4. Sign up screen
-
-| Field | API |
-|---|---|
-| User Name, Email, New Password, Confirm password → **Sign Up** button | `POST /api/v1/auth/register` |
-
-- **Route file:** `route/auth.route.js` → `router.post("/register", register)`
-- **Controller:** `controller/auth.controller.js` → `export const register`
-- Success হলে email-এ OTP পাঠায় ও response এ dev-purpose otp field থাকে → app কে **Verify OTP** screen এ নিয়ে যেতে হবে।
-
----
-
-## 5. Forgot password screen
-
-| Field | API |
-|---|---|
-| Email → **Send OTP** button | `POST /api/v1/auth/forget-password` |
-
-- **Route file:** `route/auth.route.js` → `router.post("/forget-password", forgetPassword)`
-- **Controller:** `controller/auth.controller.js` → `export const forgetPassword`
-- OTP পাঠানোর পরে app কে **Verify OTP** screen এ পাঠাতে হবে (email + otp সহ)।
-
----
+## 5. Forgot password screen===Send OTP===button==`POST /api/v1/auth/forget-password`==`route/auth.route.js`===`controller/auth.controller.js`
 
 ## 6. Verify OTP screen
 
-দুইভাবে use হয়: (a) email verification (register এর পরে), (b) reset password OTP verify।
-
-| Flow | API |
-|---|---|
-| (a) Email verify (register এর পরে) | `POST /api/v1/auth/verify-email` |
-| (b) Reset password OTP verify | `POST /api/v1/auth/verify-reset-otp` |
-| OTP আবার পাঠানো দরকার হলে | `POST /api/v1/auth/resend-otp` |
-
-- **Route file:** `route/auth.route.js`
-  - `router.post("/verify-email", verifyEmail)`
-  - `router.post("/verify-reset-otp", verifyResetPasswordOTP)`
-  - `router.post("/resend-otp", resendOTP)`
-- **Controller:** `controller/auth.controller.js` → `verifyEmail`, `verifyResetPasswordOTP`, `resendOTP`
-
----
-
+(a) Email verify (register এর পরে)===`POST /api/v1/auth/verify-email`======`route/auth.route.js`===`controller/auth.controller.js`
+(b) Reset password OTP verify=========`POST /api/v1/auth/verify-reset-otp`==`route/auth.route.js`===`controller/auth.controller.js`
+OTP আবার পাঠানো দরকার হলে============`POST /api/v1/auth/resend-otp`========`route/auth.route.js`===`controller/auth.controller.js`
+  
 ## 7. Change password screen (Set Your New Password — forgot-password flow এর শেষ ধাপ)
+New Password, Confirm password=====Save===`POST /api/v1/auth/reset-password`===`route/auth.route.js`===`controller/auth.controller.js`
 
-| Field | API |
-|---|---|
-| New Password, Confirm password → **Save** | `POST /api/v1/auth/reset-password` |
-
-- **Route file:** `route/auth.route.js` → `router.post("/reset-password", resetPassword)`
-- **Controller:** `controller/auth.controller.js` → `export const resetPassword`
-- Body: `{ email, otp, password, confirmPassword }` (আগের verify-reset-otp step থেকে email+otp রাখা লাগবে)
-
-> Note: Profile → Account Management → **Change Password** screen (logged-in অবস্থায় current password দিয়ে change) আলাদা API — নিচে সেকশন ১৬ দেখো।
-
----
 
 ## 8. Home screen
 
 সব section (Good Morning greeting, Today's Reflection, 28 days challenge ring, Today's Meditation cards, Today's Action, Latest Announcement) — একটাই API call এ আসে।
 
-| Section | API |
-|---|---|
-| পুরো Home screen | `GET /api/v1/home` |
-
-- **Route file:** `route/home.route.js` → `router.get("/", protect, getHome)`
-- **Controller:** `controller/home.controller.js` → `export const getHome`
-- Internally এটা `getOrCreateTodayJournal()` (journal.controller.js) call করে আজকের meditation/inspiration সেট তৈরি/fetch করে।
-- Response data:
-  - `greetingName` → "Good Morning, {name}!"
-  - `todaysReflection` → quote + image
-  - `challenge` → `{ totalDays, currentDay, completedDays }` (28 days challenge ring)
-  - `todaysMeditation` → array (Crescent Lunge cards)
-  - `todaysAction.inspiration` + `todaysAction.journalPrompt`
-  - `latestAnnouncement`
-
----
+`GET /api/v1/home`===`route/home.route.js`==`router.get("/", protect, getHome)`===`controller/home.controller.js`
 
 ## 9. Meditation screen (Today's Meditation grid + Today's Inspiration for Meditation)
 
 | Section | API |
 |---|---|
-| Today's Meditation + Today's Inspiration list | `GET /api/v1/meditation` |
-| (Optional) সব meditation browse করা | `GET /api/v1/meditation/all?category=yoga` |
+| Today's Meditation + Today's Inspiration list=`GET /api/v1/meditation`=`route/meditation.route.js`=`router.get("/", protect, getTodaysMeditation)`=`controller/meditation.controller.js` 
+| (Optional) সব meditation browse করা============`GET /api/v1/meditation/all?category=yoga`==`router.get("/all", protect, getAllMeditations)`=`controller/meditation.controller.js` 
 
-- **Route file:** `route/meditation.route.js`
-  - `router.get("/", protect, getTodaysMeditation)`
-  - `router.get("/all", protect, getAllMeditations)`
-- **Controller:** `controller/meditation.controller.js` → `getTodaysMeditation`, `getAllMeditations`
-
----
 
 ## 10. Yoga detail screen (Crescent Lunge — Process / Time Duration / Benefits + Start now / Mark as complete)
 
