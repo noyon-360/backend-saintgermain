@@ -399,7 +399,9 @@ export const verifyResetPasswordOTP = catchAsync(async (req, res) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Email and OTP are required");
   }
 
-  const user = await User.findOne({ email: email.toLowerCase().trim() });
+  const user = await User.findOne({
+    email: email.toLowerCase().trim(),
+  }).select("+resetPasswordOtp.code +resetPasswordOtp.expiresAt");
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -430,7 +432,9 @@ export const resetPassword = catchAsync(async (req, res) => {
 
   const user = await User.findOne({
     email: email.toLowerCase().trim(),
-  }).select("+password");
+  }).select(
+    "+password +resetPasswordOtp.code +resetPasswordOtp.expiresAt"
+  );
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
