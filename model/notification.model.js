@@ -34,6 +34,7 @@ const notificationSchema = new Schema(
       default: false,
     },
     readBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    hiddenBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
