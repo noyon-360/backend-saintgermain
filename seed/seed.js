@@ -101,27 +101,107 @@ const run = async () => {
     linkedMeditation: meditations[0]._id,
   });
 
-  await Learn.insertMany(
-    Array.from({ length: 6 }).map(() => ({
+  await Learn.insertMany([
+    {
       type: "book",
       title: "SOUL Activation For The Week Starting Monday 30th Dec 2024",
-      thumbnail: "https://example.com/images/soul-activation.jpg",
+      thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400",
       authorLabel: "MAGNIFICENT WOMAN",
       publishedDate: new Date("2024-12-30"),
-      contentUrl: "https://example.com/content/soul-activation.pdf",
-    }))
-  );
+      contentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      type: "book",
+      title: "The First 90 Days — Magnificence Reset",
+      thumbnail: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-11-18"),
+      contentUrl: "https://pdfobject.com/pdf/sample.pdf",
+    },
+    {
+      type: "book",
+      title: "Breathwork Guide For Inner Calm",
+      thumbnail: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-10-05"),
+      contentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      type: "book",
+      title: "Weekly Journal Prompts For Self Love",
+      thumbnail: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-09-12"),
+      contentUrl: "https://pdfobject.com/pdf/sample.pdf",
+    },
+    {
+      type: "book",
+      title: "Sacred Morning Rituals For Women",
+      thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-08-22"),
+      contentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      type: "book",
+      title: "Letting Go Of Anxiety — Workbook",
+      thumbnail: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-07-01"),
+      contentUrl: "https://pdfobject.com/pdf/sample.pdf",
+    },
+  ]);
 
-  await Learn.insertMany(
-    Array.from({ length: 6 }).map(() => ({
+  await Learn.insertMany([
+    {
       type: "video",
-      title: "SOUL Activation For The Week Starting Monday 30th Dec 2024",
-      thumbnail: "https://example.com/images/soul-activation.jpg",
+      title: "SOUL Activation Guided Session",
+      thumbnail: "https://img.youtube.com/vi/inpok4MKVLM/hqdefault.jpg",
       authorLabel: "MAGNIFICENT WOMAN",
       publishedDate: new Date("2024-12-30"),
-      contentUrl: "https://example.com/content/soul-activation.mp4",
-    }))
-  );
+      contentUrl: "https://www.youtube.com/watch?v=inpok4MKVLM",
+    },
+    {
+      type: "video",
+      title: "15 Minute Morning Meditation",
+      thumbnail: "https://img.youtube.com/vi/ZToicYcHIOU/hqdefault.jpg",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-11-10"),
+      contentUrl: "https://www.youtube.com/watch?v=ZToicYcHIOU",
+    },
+    {
+      type: "video",
+      title: "Breath & Body Flow Practice",
+      thumbnail: "https://img.youtube.com/vi/1ZYbU82GVz4/hqdefault.jpg",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-10-02"),
+      contentUrl: "https://www.youtube.com/watch?v=1ZYbU82GVz4",
+    },
+    {
+      type: "video",
+      title: "Evening Wind Down Ritual",
+      thumbnail: "https://img.youtube.com/vi/WPni755-Krg/hqdefault.jpg",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-09-08"),
+      contentUrl: "https://www.youtube.com/watch?v=WPni755-Krg",
+    },
+    {
+      type: "video",
+      title: "Heart Opening Yoga Flow",
+      thumbnail: "https://img.youtube.com/vi/v7AYKMP6rOE/hqdefault.jpg",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-08-15"),
+      contentUrl: "https://www.youtube.com/watch?v=v7AYKMP6rOE",
+    },
+    {
+      type: "video",
+      title: "Confidence Activation Workshop",
+      thumbnail: "https://img.youtube.com/vi/DWcJFNfaw9c/hqdefault.jpg",
+      authorLabel: "MAGNIFICENT WOMAN",
+      publishedDate: new Date("2024-07-20"),
+      contentUrl: "https://www.youtube.com/watch?v=DWcJFNfaw9c",
+    },
+  ]);
 
   await Notification.insertMany([
     { type: "meditation", title: "New Meditation", message: "Letting Go of Anxiety" },
