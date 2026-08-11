@@ -4,9 +4,63 @@ import AppError from "../errors/AppError.js";
 import catchAsync from "../utils/catchAsync.js";
 import sendResponse from "../utils/sendResponse.js";
 
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+/** Shape one Learn doc for the Learn screen cards. */
+const mapLearnItem = (item, userId) => {
+  const doc = typeof item.toObject === "function" ? item.toObject() : item;
+  const published = doc.publishedDate ? new Date(doc.publishedDate) : null;
+  const isLiked = userId
+    ? (doc.likedBy || []).some((id) => id.toString() === userId.toString())
+    : false;
+  const isDownloaded = userId
+    ? (doc.downloadedBy || []).some((id) => id.toString() === userId.toString())
+    : false;
+
+  return {
+    _id: doc._id,
+    type: doc.type,
+    title: doc.title,
+    thumbnail: doc.thumbnail || "",
+    authorLabel: doc.authorLabel || "",
+    publishedDate: doc.publishedDate,
+    date: published
+      ? `${MONTHS[published.getUTCMonth()]} ${published.getUTCDate()}, ${published.getUTCFullYear()}`
+      : "",
+    contentUrl: doc.contentUrl || "",
+    likesCount: doc.likesCount || 0,
+    downloadsCount: doc.downloadsCount || 0,
+    sharesCount: doc.sharesCount || 0,
+    isLiked,
+    isDownloaded,
+  };
+};
+
 // GET /learn?type=book|video&search=&page=&limit=
+// Used by Learn screen (Book / Video tabs + search)
 export const getLearnContent = catchAsync(async (req, res) => {
   const { type = "book", search = "", page = 1, limit = 10 } = req.query;
+
+  const allowedTypes = ["book", "video"];
+  if (!allowedTypes.includes(type)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "type must be 'book' or 'video'"
+    );
+  }
 
   const filter = { isActive: true, type };
   if (search) {
@@ -20,16 +74,18 @@ export const getLearnContent = catchAsync(async (req, res) => {
     Learn.countDocuments(filter),
   ]);
 
+  const data = items.map((item) => mapLearnItem(item, req.user?._id));
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Learn content fetched successfully",
-    data: items,
+    data,
     meta: { page: Number(page), limit: Number(limit), total },
   });
 });
 
-// GET /learn/:id
+// GET /learn/:id  — READ MORE detail
 export const getLearnContentById = catchAsync(async (req, res) => {
   const item = await Learn.findById(req.params.id);
   if (!item) {
@@ -40,11 +96,11 @@ export const getLearnContentById = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Content fetched successfully",
-    data: item,
+    data: mapLearnItem(item, req.user?._id),
   });
 });
 
-// PATCH /learn/:id/like
+// PATCH /learn/:id/like  — heart icon
 export const toggleLike = catchAsync(async (req, res) => {
   const item = await Learn.findById(req.params.id);
   if (!item) {
@@ -72,26 +128,37 @@ export const toggleLike = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: liked ? "Liked" : "Unliked",
-    data: { liked, likesCount: item.likesCount },
+    data: { liked, isLiked: liked, likesCount: item.likesCount },
   });
 });
 
 // PATCH /learn/:id/download
 export const registerDownload = catchAsync(async (req, res) => {
-  const item = await Learn.findByIdAndUpdate(
-    req.params.id,
-    { $inc: { downloadsCount: 1 } },
-    { new: true }
-  );
+  const item = await Learn.findById(req.params.id);
   if (!item) {
     throw new AppError(httpStatus.NOT_FOUND, "Content not found");
+  }
+
+  // downloadsCount counts unique users, so re-downloading never inflates it.
+  const alreadyDownloaded = item.downloadedBy.some(
+    (u) => u.toString() === req.user._id.toString()
+  );
+
+  if (!alreadyDownloaded) {
+    item.downloadedBy.push(req.user._id);
+    item.downloadsCount += 1;
+    await item.save();
   }
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Download registered",
-    data: { downloadUrl: item.contentUrl, downloadsCount: item.downloadsCount },
+    data: {
+      downloadUrl: item.contentUrl,
+      downloadsCount: item.downloadsCount,
+      isDownloaded: true,
+    },
   });
 });
 
@@ -114,9 +181,10 @@ export const registerShare = catchAsync(async (req, res) => {
   });
 });
 
-
+// POST /learn  — admin/content create
 export const createLearnContent = catchAsync(async (req, res) => {
-  const { type, title, authorLabel, thumbnail, contentUrl } = req.body;
+  const { type, title, authorLabel, thumbnail, contentUrl, publishedDate } =
+    req.body;
 
   if (!type || !["book", "video"].includes(type)) {
     throw new AppError(
@@ -138,12 +206,13 @@ export const createLearnContent = catchAsync(async (req, res) => {
     authorLabel,
     thumbnail,
     contentUrl,
+    ...(publishedDate ? { publishedDate } : {}),
   });
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
     message: `${type === "book" ? "Book" : "Video"} added successfully`,
-    data: item,
+    data: mapLearnItem(item, req.user?._id),
   });
 });

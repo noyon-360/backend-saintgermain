@@ -41,6 +41,7 @@ const learnSchema = new Schema(
       default: 0,
     },
     likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    downloadedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
     isActive: {
       type: Boolean,
       default: true,
