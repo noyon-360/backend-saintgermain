@@ -14,7 +14,7 @@ export const sendEmail = async (to, subject, html) => {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to,
-    subject: subject || "Lumora Verification Code",
+    subject: subject || "Lumminous Thoughts Verification Code",
     html,
   });
 };
