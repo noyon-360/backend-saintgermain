@@ -187,7 +187,7 @@ export const resendOTP = catchAsync(async (req, res) => {
   try {
     await sendEmail(
       user.email,
-      "Your New Verification Code - Lumora",
+      "Your New Verification Code - Luminous Thoughts",
       otpEmailTemplate({ title: "Verify Your Email", otp })
     );
   } catch (err) {
