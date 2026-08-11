@@ -6,7 +6,10 @@ import sendResponse from "../utils/sendResponse.js";
 // GET /notification  -> grouped into "Today" and "Previous"
 export const getNotifications = catchAsync(async (req, res) => {
   const notifications = await Notification.find({
-    $or: [{ user: req.user._id }, { user: null }],
+    $and: [
+      { $or: [{ user: req.user._id }, { user: null }] },
+      { hiddenBy: { $ne: req.user._id } },
+    ],
   }).sort("-createdAt");
 
   const startOfToday = new Date();
@@ -61,5 +64,41 @@ export const markNotificationRead = catchAsync(async (req, res) => {
     success: true,
     message: "Notification marked as read",
     data: notification,
+  });
+});
+
+// DELETE /notification/:id
+// User-specific notifications are removed. Broadcast notifications are hidden
+// only for the requesting user so they remain available to everyone else.
+export const deleteNotification = catchAsync(async (req, res) => {
+  const notification = await Notification.findOne({
+    _id: req.params.id,
+    $or: [{ user: req.user._id }, { user: null }],
+  });
+
+  if (!notification) {
+    return sendResponse(res, {
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: "Notification not found",
+    });
+  }
+
+  if (notification.user) {
+    await notification.deleteOne();
+  } else if (
+    !notification.hiddenBy.some(
+      (id) => id.toString() === req.user._id.toString()
+    )
+  ) {
+    notification.hiddenBy.push(req.user._id);
+    await notification.save();
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Notification deleted successfully",
+    data: null,
   });
 });
